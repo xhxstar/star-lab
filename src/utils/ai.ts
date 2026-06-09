@@ -1,7 +1,6 @@
 import { Board, Player, Position } from '../types';
 
 const BOARD_SIZE = 15;
-const EMPTY: Player = null;
 
 // 棋型评分
 const SCORES: Record<string, number> = {
@@ -31,15 +30,18 @@ function evaluateLine(line: Player[], player: Player): number {
   const opponent: Player = player === 'black' ? 'white' : 'black';
   const counts = getPieceCount(line);
 
-  if (counts[opponent] > 0) return 0;
-  if (counts[player] === 5) return SCORES['five'];
-  if (counts[player] === 4 && counts.empty === 1) return SCORES['live_four'];
-  if (counts[player] === 4 && counts.empty === 2) return SCORES['rush_four'];
-  if (counts[player] === 3 && counts.empty === 2) return SCORES['live_three'];
-  if (counts[player] === 3 && counts.empty === 3) return SCORES['sleep_three'];
-  if (counts[player] === 2 && counts.empty === 3) return SCORES['live_two'];
-  if (counts[player] === 2 && counts.empty === 4) return SCORES['sleep_two'];
-  if (counts[player] === 1) return SCORES['live_one'];
+  const playerKey = player === 'black' ? 'black' : 'white';
+  const opponentKey = opponent === 'black' ? 'black' : 'white';
+
+  if (counts[opponentKey] > 0) return 0;
+  if (counts[playerKey] === 5) return SCORES['five'];
+  if (counts[playerKey] === 4 && counts.empty === 1) return SCORES['live_four'];
+  if (counts[playerKey] === 4 && counts.empty === 2) return SCORES['rush_four'];
+  if (counts[playerKey] === 3 && counts.empty === 2) return SCORES['live_three'];
+  if (counts[playerKey] === 3 && counts.empty === 3) return SCORES['sleep_three'];
+  if (counts[playerKey] === 2 && counts.empty === 3) return SCORES['live_two'];
+  if (counts[playerKey] === 2 && counts.empty === 4) return SCORES['sleep_two'];
+  if (counts[playerKey] === 1) return SCORES['live_one'];
   return 0;
 }
 
@@ -103,18 +105,6 @@ function checkWin(board: Board, player: Player): boolean {
     }
   }
   return false;
-}
-
-function getEmptyPositions(board: Board): Position[] {
-  const positions: Position[] = [];
-  for (let row = 0; row < BOARD_SIZE; row++) {
-    for (let col = 0; col < BOARD_SIZE; col++) {
-      if (board[row][col] === null) {
-        positions.push({ row, col });
-      }
-    }
-  }
-  return positions;
 }
 
 function getNeighbors(board: Board): Position[] {

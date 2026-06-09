@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { Board, GameState, Player, GameMode, Position } from '../types';
-import { createEmptyBoard, checkWin, getAIMove, BOARD_SIZE } from '../utils/ai';
+import { GameState, GameMode, Position } from '../types';
+import { createEmptyBoard, checkWin, getAIMove } from '../utils/ai';
 
 interface GameStore extends GameState {
   initGame: (mode: GameMode) => void;
