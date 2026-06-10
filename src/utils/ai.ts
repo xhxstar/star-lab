@@ -52,37 +52,56 @@ function evaluateLine(line: Player[], player: Player): number {
 
 function evaluatePosition(board: Board, player: Player): number {
   let score = 0;
-  const directions = [
+  const directions: [number, number][][] = [
     [[0, 1], [0, -1]],
     [[1, 0], [-1, 0]],
     [[1, 1], [-1, -1]],
     [[1, -1], [-1, 1]],
   ];
 
+  // Only evaluate cells near existing pieces
+  const activeCells = new Set<string>();
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let col = 0; col < BOARD_SIZE; col++) {
-      for (const [dir1, dir2] of directions) {
-        const line: Player[] = [];
-        line.push(board[row][col]);
-
-        for (let i = 1; i <= 4; i++) {
-          const r1 = row + dir1[0] * i;
-          const c1 = col + dir1[1] * i;
-          if (r1 >= 0 && r1 < BOARD_SIZE && c1 >= 0 && c1 < BOARD_SIZE) {
-            line.push(board[r1][c1]);
+      if (board[row][col] !== null) {
+        for (let dr = -2; dr <= 2; dr++) {
+          for (let dc = -2; dc <= 2; dc++) {
+            const nr = row + dr;
+            const nc = col + dc;
+            if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+              activeCells.add(nr + "," + nc);
+            }
           }
         }
-
-        for (let i = 1; i <= 4; i++) {
-          const r2 = row + dir2[0] * i;
-          const c2 = col + dir2[1] * i;
-          if (r2 >= 0 && r2 < BOARD_SIZE && c2 >= 0 && c2 < BOARD_SIZE) {
-            line.push(board[r2][c2]);
-          }
-        }
-
-        score += evaluateLine(line, player);
       }
+    }
+  }
+
+  // Empty board
+  if (activeCells.size === 0) return 0;
+
+  for (const key of activeCells) {
+    const [row, col] = key.split(",").map(Number);
+    for (const [dir1, dir2] of directions) {
+      const line: Player[] = [board[row][col]];
+
+      for (let i = 1; i <= 4; i++) {
+        const r1 = row + dir1[0] * i;
+        const c1 = col + dir1[1] * i;
+        if (r1 >= 0 && r1 < BOARD_SIZE && c1 >= 0 && c1 < BOARD_SIZE) {
+          line.push(board[r1][c1]);
+        }
+      }
+
+      for (let i = 1; i <= 4; i++) {
+        const r2 = row + dir2[0] * i;
+        const c2 = col + dir2[1] * i;
+        if (r2 >= 0 && r2 < BOARD_SIZE && c2 >= 0 && c2 < BOARD_SIZE) {
+          line.push(board[r2][c2]);
+        }
+      }
+
+      score += evaluateLine(line, player);
     }
   }
 
