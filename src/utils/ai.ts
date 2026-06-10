@@ -1,8 +1,7 @@
-import { Board, Player, Position } from '../types';
+import { Board, Player, Position, Difficulty } from '../types';
 
 const BOARD_SIZE = 15;
 
-// 棋型评分
 const SCORES: Record<string, number> = {
   'five': 100000,
   'live_four': 10000,
@@ -12,6 +11,12 @@ const SCORES: Record<string, number> = {
   'live_two': 100,
   'sleep_two': 10,
   'live_one': 1,
+};
+
+const DEPTH_BY_DIFFICULTY: Record<Difficulty, number> = {
+  easy: 1,
+  medium: 3,
+  hard: 5,
 };
 
 function createEmptyBoard(): Board {
@@ -183,8 +188,9 @@ function minimax(
   return { score: bestScore, position: bestPosition };
 }
 
-export function getAIMove(board: Board): Position | null {
-  const result = minimax(board, 3, -Infinity, Infinity, true);
+export function getAIMove(board: Board, difficulty: Difficulty = 'medium'): Position | null {
+  const depth = DEPTH_BY_DIFFICULTY[difficulty];
+  const result = minimax(board, depth, -Infinity, Infinity, true);
   return result.position;
 }
 

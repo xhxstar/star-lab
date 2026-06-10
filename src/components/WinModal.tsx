@@ -6,16 +6,23 @@ export default function WinModal() {
   const winner = useGameStore(state => state.winner);
   const isGameOver = useGameStore(state => state.isGameOver);
   const gameMode = useGameStore(state => state.gameMode);
+  const gameOverReason = useGameStore(state => state.gameOverReason);
   const initGame = useGameStore(state => state.initGame);
   const resetGame = useGameStore(state => state.resetGame);
 
   if (!isGameOver || winner === null) return null;
 
   const getWinnerText = () => {
+    const timeoutText = gameOverReason === 'timeout' ? '（超时判负）' : '';
+    
     if (gameMode === 'ai') {
-      return winner === 'black' ? '恭喜你，你赢了！' : 'AI获胜！';
+      return winner === 'black' 
+        ? `恭喜你，你赢了！${timeoutText}` 
+        : `AI获胜！${timeoutText}`;
     }
-    return winner === 'black' ? '黑棋获胜！' : '白棋获胜！';
+    return winner === 'black' 
+      ? `黑棋获胜！${timeoutText}` 
+      : `白棋获胜！${timeoutText}`;
   };
 
   const handleRestart = () => {
