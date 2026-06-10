@@ -44,7 +44,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameMode: mode,
       difficulty,
       moveHistory: [],
-      timer: getInitialTimer(),
+      timer: { ...getInitialTimer(), isRunning: true },
     });
   },
 
@@ -95,18 +95,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (moveHistory.length === 0) return;
 
     const newHistory = [...moveHistory];
-    const lastMove = newHistory.pop()!;
+
+    // In AI mode, undo both human and AI moves
+    const stepsToUndo = gameMode === 'ai' && newHistory.length >= 2 ? 2 : 1;
+    for (let i = 0; i < stepsToUndo; i++) {
+      newHistory.pop();
+    }
 
     const newBoard = createEmptyBoard();
     for (const move of newHistory) {
       newBoard[move.row][move.col] = move.player;
     }
 
-    const currentPlayer = lastMove.player;
-
     set({
       board: newBoard,
-      currentPlayer,
+      currentPlayer: 'black',
       moveHistory: newHistory,
       winner: null,
       isGameOver: false,
@@ -116,14 +119,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       },
     });
 
-    if (gameMode === 'ai' && currentPlayer === 'white') {
-      setTimeout(() => {
-        const aiMove = getAIMove(get().board, get().difficulty);
-        if (aiMove) {
-          get().makeMove(aiMove);
-        }
-      }, 500);
-    }
+    // No AI auto-move after undo - it's always human's turn
   },
 
   resetGame: () => {
