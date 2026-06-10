@@ -74,6 +74,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       moveHistory: [...state.moveHistory, moveRecord],
       timer: {
         ...state.timer,
+        [currentPlayer === 'black' ? 'whiteTime' : 'blackTime']: TIME_LIMIT,
         isRunning: !isGameOver,
       },
     }));
