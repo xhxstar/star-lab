@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { GameState, GameMode, Position, Difficulty, MoveRecord, TimerState } from '../types';
-import { createEmptyBoard, checkWin, getAIMove } from '../utils/ai';
+import { createEmptyBoard, checkWin, getAIMoveAsync } from '../utils/ai';
 
 const TIME_LIMIT = 30;
 
@@ -80,12 +80,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }));
 
     if (!isGameOver && gameMode === 'ai' && get().currentPlayer === 'white') {
-      setTimeout(() => {
-        const aiMove = getAIMove(get().board, difficulty);
-        if (aiMove) {
+      getAIMoveAsync(newBoard, difficulty).then((aiMove) => {
+        if (aiMove && !get().isGameOver) {
           get().makeMove(aiMove);
         }
-      }, 500);
+      });
     }
   },
 
