@@ -36,7 +36,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   ...getInitialState(),
   difficulty: 'medium',
   moveHistory: [],
-  timer: getInitialTimer(),
+  timer: { ...getInitialTimer(), isRunning: true },
 
   initGame: (mode: GameMode, difficulty: Difficulty = 'medium') => {
     set({

@@ -14,7 +14,6 @@ export default function Game() {
   const moveHistory = useGameStore(state => state.moveHistory);
   const timer = useGameStore(state => state.timer);
   const tickTimer = useGameStore(state => state.tickTimer);
-  const currentPlayer = useGameStore(state => state.currentPlayer);
   const isGameOver = useGameStore(state => state.isGameOver);
 
   useEffect(() => {
@@ -24,14 +23,7 @@ export default function Game() {
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [timer.isRunning, tickTimer, isGameOver, currentPlayer]);
-
-  useEffect(() => {
-    if (!isGameOver && moveHistory.length === 0) {
-      const startTimer = useGameStore.getState().startTimer;
-      startTimer();
-    }
-  }, []);
+  }, [timer.isRunning, tickTimer, isGameOver]);
 
   const handleRestart = () => {
     initGame(gameMode);
